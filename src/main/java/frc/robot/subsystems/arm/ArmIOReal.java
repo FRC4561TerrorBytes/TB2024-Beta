@@ -114,7 +114,6 @@ public class ArmIOReal implements ArmIO {
         return Math.abs(getArmEncoderRotation() - armSetPoint) <= 0.2;
     }
 
-    
 
     public void nudge(double degrees) {
         armSetPoint = m_armMotorLeft.getPosition().getValueAsDouble() + degrees;

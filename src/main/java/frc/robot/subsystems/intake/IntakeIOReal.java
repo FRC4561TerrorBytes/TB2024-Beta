@@ -10,7 +10,9 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
 
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
@@ -25,8 +27,6 @@ public class IntakeIOReal implements IntakeIO{
     private final DigitalInput beamBreak = new DigitalInput(2);
 
     private Alert intakeMotorDisconnectAlert;
-    private Alert intakeMotorCurrentAlert;
-    private boolean alertActive;
 
       public IntakeIOReal() {
 
@@ -60,8 +60,7 @@ public class IntakeIOReal implements IntakeIO{
 
         m_frontIntake.burnFlash();   
         
-        intakeMotorDisconnectAlert = new Alert("Intake Alert", "Intake motor is not present on CAN", AlertType.ERROR);
-        intakeMotorCurrentAlert = new Alert("Intake Alert", "Intake motor has motor/overcurrent fault", AlertType.WARNING);
+        intakeMotorDisconnectAlert = new Alert("Intake motor is not present on CAN", AlertType.kError);
 
     }
 
@@ -71,14 +70,9 @@ public class IntakeIOReal implements IntakeIO{
         inputs.noteInIntake = !beamBreak.get();
 
         Leds.getInstance().noteInIntake = !beamBreak.get();
+        intakeMotorDisconnectAlert.set(m_frontIntake.getFaults() != 0);
 
-        AlertHandler.reportSparkMaxFault("Intake Alert", m_frontIntake, intakeMotorDisconnectAlert, intakeMotorCurrentAlert);
     };
-
-    @Override
-    public boolean getDisconnect(){
-        return intakeMotorDisconnectAlert.getState();
-    }
 
     public void setIntakeSpeed(double velocity) {
         m_frontIntake.set(velocity);

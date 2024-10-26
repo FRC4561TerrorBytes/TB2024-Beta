@@ -1,6 +1,7 @@
 package frc.robot.subsystems.climber;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class ClimberIOSim implements ClimberIO {
@@ -8,8 +9,10 @@ public class ClimberIOSim implements ClimberIO {
 
     private double climberAppliedVolts = 0.0;
 
-    private DCMotorSim climberMotorSim = new DCMotorSim(DCMotor.getNEO(1), 100, 0.025);
-
+    private DCMotorSim climberMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), 0.1 ,100), 
+        DCMotor.getNEO(1), 
+        0.025);
+    
     public void updateInputs(ClimberIOInputs inputs) {
         climberMotorSim.update(LOOP_PERIOD_SECS);
         inputs.climberAppliedVolts = climberAppliedVolts;

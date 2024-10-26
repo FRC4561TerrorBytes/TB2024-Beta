@@ -5,6 +5,7 @@
 package frc.robot.subsystems.indexer;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.Constants;
 
@@ -14,7 +15,9 @@ public class IndexerIOSim implements IndexerIO {
 
     private double indexerAppliedVolts = 0.0;
 
-    private DCMotorSim indexerMotorSim = new DCMotorSim(DCMotor.getNeo550(1), Constants.INDEXER_MOTOR_GEAR_RATIO, 0.025);
+    private DCMotorSim indexerMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), 0.1 ,Constants.INDEXER_MOTOR_GEAR_RATIO), 
+        DCMotor.getNEO(1), 
+        0.025);
 
     public void updateInputs(IndexerIOInputs inputs) {
         indexerMotorSim.update(LOOP_PERIOD_SECS);

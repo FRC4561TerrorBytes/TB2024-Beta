@@ -23,6 +23,4 @@ public interface IntakeIO {
 
     public default void stopIntake() {};
 
-    public default boolean getDisconnect() {return false;};
-
 }

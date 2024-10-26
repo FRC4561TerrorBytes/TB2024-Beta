@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.intake;
 
-import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -54,10 +53,5 @@ public class Intake extends SubsystemBase {
 
     public boolean getIntakeBreak() {
       return inputs.noteInIntake;
-    }
-
-    @AutoLogOutput(key = "Intake/CAN Disconnect")
-    public boolean getDisconnect() {
-      return io.getDisconnect();
     }
   }

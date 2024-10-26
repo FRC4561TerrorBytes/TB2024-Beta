@@ -25,7 +25,6 @@ public class IndexerIOReal implements IndexerIO {
     private final DigitalInput m_leftLimitSwitch = new DigitalInput(3);
 
     private Alert indexerMotorDisconnectAlert;
-    private Alert indexerMotorCurrentAlert; 
 
     public IndexerIOReal(){
         m_indexer.restoreFactoryDefaults();
@@ -35,10 +34,10 @@ public class IndexerIOReal implements IndexerIO {
         
         m_indexer.burnFlash();
 
-        indexerMotorDisconnectAlert = new Alert("Indexer Alert", "Indexer motor is not present on CAN", AlertType.kError);
-        indexerMotorCurrentAlert = new Alert("Indexer Alert", "Indexer motor has motor/overcurrent fault", AlertType.WARNING);    }
-
-     public void updateInputs(IndexerIOInputs inputs) {
+        indexerMotorDisconnectAlert = new Alert("Indexer motor is not present on CAN", AlertType.kError);
+    }
+    
+    public void updateInputs(IndexerIOInputs inputs) {
         inputs.indexerAppliedVolts = m_indexer.getAppliedOutput();
         inputs.indexerState = !m_rightLimitSwitch.get() || !m_leftLimitSwitch.get();
         inputs.indexerCurrentAmps = m_indexer.getOutputCurrent();
@@ -47,8 +46,7 @@ public class IndexerIOReal implements IndexerIO {
         Logger.recordOutput("LeftLimit",!m_leftLimitSwitch.get());
         Logger.recordOutput("RightLimit",!m_rightLimitSwitch.get());
 
-        AlertHandler.reportSparkMaxFault("Indexer Alert", m_indexer, indexerMotorDisconnectAlert, indexerMotorCurrentAlert);
-        // SmartDashboard.putNumber("Indexer Current", m_indexer.getOutputCurrent());
+        indexerMotorDisconnectAlert.set(m_indexer.getFaults() != 0);
     }
 
     public void setIndexerSpeed(double speed){
@@ -61,10 +59,5 @@ public class IndexerIOReal implements IndexerIO {
 
     public boolean getIndexerState(){
         return !m_rightLimitSwitch.get() || !m_leftLimitSwitch.get();
-    }
-
-    @Override
-    public boolean getDisconnect(){
-        return indexerMotorDisconnectAlert.getState();
     }
 }

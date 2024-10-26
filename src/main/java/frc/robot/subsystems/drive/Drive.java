@@ -16,6 +16,7 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.Volts;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
@@ -42,6 +43,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.BuiltInAccelerometer;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -457,14 +459,18 @@ public class Drive extends SubsystemBase {
    * @return
    */
   public Pose2d getSpeakerPose(){
-    Pose2d speaker = new Pose2d();
-    if(DriverStation.getAlliance().get() == DriverStation.Alliance.Blue){
-      speaker = new Pose2d(new Translation2d(0, 5.54), new Rotation2d());
+    Optional<Alliance> ally = DriverStation.getAlliance();
+    if (ally.isPresent()) {
+      if (ally.get() == Alliance.Red) {
+        return new Pose2d(new Translation2d(16.54, 5.54), new Rotation2d());
+      }
+      if (ally.get() == Alliance.Blue) {
+        return new Pose2d(new Translation2d(0, 5.54), new Rotation2d());
+      }
+    } else {
+      return new Pose2d();
     }
-    else if(DriverStation.getAlliance().get() == DriverStation.Alliance.Red){
-      speaker = new Pose2d(new Translation2d(16.54, 5.54), new Rotation2d());
-    }
-    return speaker;
+    return new Pose2d();
   }
 
   /**
