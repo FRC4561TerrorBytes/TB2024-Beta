@@ -18,7 +18,7 @@ import frc.robot.Constants;
 public class ShooterIOSim implements ShooterIO{
     private static final double LOOP_PERIOD_SECS = 0.02;
 
-    private DCMotorSim shooterMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(2), 0.1 ,Constants.SHOOTER_MOTOR_GEAR_RATIO), DCMotor.getFalcon500(1), 8.0);
+    private DCMotorSim shooterMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(2), 0.1 ,Constants.SHOOTER_MOTOR_GEAR_RATIO), DCMotor.getFalcon500(1));
 
     private SimpleMotorFeedforward shooterFeedforward = new SimpleMotorFeedforward(1.0, 0.1);
     private PIDController shooterFeedback = new PIDController(2000.0, 0.0, 300.0);

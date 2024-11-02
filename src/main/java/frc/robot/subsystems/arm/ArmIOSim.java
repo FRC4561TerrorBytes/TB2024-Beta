@@ -24,7 +24,7 @@ public class ArmIOSim implements ArmIO {
     private SimpleMotorFeedforward armFeedforward = new SimpleMotorFeedforward(0.0, 0.0);
     private PIDController armFeedback = new PIDController(6.0, 0.0, 2.0);
 
-    private DCMotorSim armMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(2), 0.1 ,1), DCMotor.getFalcon500(2), 0.25);
+    private DCMotorSim armMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getFalcon500(2), 0.1 ,1), DCMotor.getFalcon500(2));
 
 
     public void updateInputs(ArmIOInputs inputs) {

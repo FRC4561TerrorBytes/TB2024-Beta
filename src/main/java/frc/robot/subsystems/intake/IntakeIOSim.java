@@ -17,8 +17,7 @@ public class IntakeIOSim implements IntakeIO{
     private double intakeAppliedVolts = 0.0;
 
     private DCMotorSim intakeMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), 0.1 ,Constants.INTAKE_MOTOR_GEAR_RATIO), 
-        DCMotor.getNEO(1), 
-        0.025);
+        DCMotor.getNEO(1));
     
 
     @Override

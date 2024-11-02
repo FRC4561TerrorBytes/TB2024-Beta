@@ -129,10 +129,11 @@ public class Drive extends SubsystemBase {
     LimelightHelpers.SetFiducialIDFiltersOverride(Constants.VISION_LIMELIGHT, validIds);
 
     //Load PP robot config
-    RobotConfig config = new RobotConfig(null, null, null, null);
+    RobotConfig config;
     try{
       config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
+      config = new RobotConfig(0, 0, null, 0, 0);
       // Handle exception as needed
       e.printStackTrace();
     }

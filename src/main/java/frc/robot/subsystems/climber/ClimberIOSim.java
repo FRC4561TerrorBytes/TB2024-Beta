@@ -10,8 +10,7 @@ public class ClimberIOSim implements ClimberIO {
     private double climberAppliedVolts = 0.0;
 
     private DCMotorSim climberMotorSim = new DCMotorSim(LinearSystemId.createDCMotorSystem(DCMotor.getNEO(1), 0.1 ,100), 
-        DCMotor.getNEO(1), 
-        0.025);
+        DCMotor.getNEO(1));
     
     public void updateInputs(ClimberIOInputs inputs) {
         climberMotorSim.update(LOOP_PERIOD_SECS);
