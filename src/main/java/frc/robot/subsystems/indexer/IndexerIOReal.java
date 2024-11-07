@@ -4,12 +4,13 @@
 
 package frc.robot.subsystems.indexer;
 
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-
 import org.littletonrobotics.junction.Logger;
 
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -20,19 +21,20 @@ import frc.robot.subsystems.Leds;
 /** Add your docs here. */
 public class IndexerIOReal implements IndexerIO {
 
-    private final CANSparkMax m_indexer = new CANSparkMax(Constants.INDEXER, MotorType.kBrushless);
+    private final SparkMax m_indexer = new SparkMax(Constants.INDEXER, MotorType.kBrushless);
     private final DigitalInput m_rightLimitSwitch = new DigitalInput(1);
     private final DigitalInput m_leftLimitSwitch = new DigitalInput(3);
 
     private Alert indexerMotorDisconnectAlert;
 
     public IndexerIOReal(){
-        m_indexer.restoreFactoryDefaults();
-        //set inverted here
-        m_indexer.setSmartCurrentLimit(60, 25);
-        m_indexer.setIdleMode(IdleMode.kBrake);
-        
-        m_indexer.burnFlash();
+
+
+        SparkBaseConfig indexerConfig = new SparkBaseConfig() {};
+        indexerConfig.idleMode(IdleMode.kBrake);
+        indexerConfig.smartCurrentLimit(60, 25);
+        m_indexer.configure(indexerConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
 
         indexerMotorDisconnectAlert = new Alert("Indexer motor is not present on CAN", AlertType.kError);
     }
@@ -46,7 +48,7 @@ public class IndexerIOReal implements IndexerIO {
         Logger.recordOutput("LeftLimit",!m_leftLimitSwitch.get());
         Logger.recordOutput("RightLimit",!m_rightLimitSwitch.get());
 
-        indexerMotorDisconnectAlert.set(m_indexer.getFaults() != 0);
+        indexerMotorDisconnectAlert.set(m_indexer.hasActiveFault());
     }
 
     public void setIndexerSpeed(double speed){

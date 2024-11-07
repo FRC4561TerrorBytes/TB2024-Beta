@@ -4,62 +4,36 @@
 
 package frc.robot.subsystems.intake;
 
-import org.littletonrobotics.junction.Logger;
-
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.REVLibError;
-
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 import frc.robot.subsystems.Leds;
 
 /** Add your docs here. */
 public class IntakeIOReal implements IntakeIO{
 
-    private final CANSparkMax m_frontIntake = new CANSparkMax(Constants.FRONT_INTAKE_MOTOR, MotorType.kBrushless);
+    private final SparkMax m_frontIntake = new SparkMax(Constants.FRONT_INTAKE_MOTOR, MotorType.kBrushless);
     private final DigitalInput beamBreak = new DigitalInput(2);
 
     private Alert intakeMotorDisconnectAlert;
 
       public IntakeIOReal() {
 
-        // Restore front/back factory defaults
-        m_frontIntake.restoreFactoryDefaults();
+        SparkBaseConfig intakeConfig = new SparkBaseConfig() {};
+        intakeConfig.idleMode(IdleMode.kCoast);
+        intakeConfig.smartCurrentLimit(35);
+        intakeConfig.voltageCompensation(12.0);
+        intakeConfig.inverted(true);
 
-        // Idle phase for front and back
-        m_frontIntake.setIdleMode(IdleMode.kCoast);
+        m_frontIntake.configure(intakeConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
 
-        // Limit of currents front/back
-        REVLibError frontCurrent = m_frontIntake.setSmartCurrentLimit(35);
-        m_frontIntake.setSmartCurrentLimit(35);
-        boolean frontIntakeNoLongerGood;
-        if ( frontCurrent!= REVLibError.kOk)
-        {
-            frontIntakeNoLongerGood = true;
-        } else
-        {
-            frontIntakeNoLongerGood = false;
-        }
-        Logger.recordOutput("selfCheck/frontIntake", !frontIntakeNoLongerGood);
-        
-        //Voltage compensation
-        m_frontIntake.enableVoltageCompensation(12.0);
-
-        //Set inverted
-        m_frontIntake.setInverted(true);
-
-        m_frontIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus0, 50);
-        m_frontIntake.setPeriodicFramePeriod(PeriodicFrame.kStatus1, 50);
-
-        m_frontIntake.burnFlash();   
-        
         intakeMotorDisconnectAlert = new Alert("Intake motor is not present on CAN", AlertType.kError);
 
     }
@@ -70,7 +44,7 @@ public class IntakeIOReal implements IntakeIO{
         inputs.noteInIntake = !beamBreak.get();
 
         Leds.getInstance().noteInIntake = !beamBreak.get();
-        intakeMotorDisconnectAlert.set(m_frontIntake.getFaults() != 0);
+        intakeMotorDisconnectAlert.set(m_frontIntake.hasActiveFault());
 
     };
 

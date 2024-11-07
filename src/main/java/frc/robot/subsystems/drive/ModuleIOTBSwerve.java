@@ -14,17 +14,18 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
@@ -40,7 +41,7 @@ public class ModuleIOTBSwerve implements ModuleIO {
     private static final double TURN_GEAR_RATIO = 150.0 / 7.0;
 
     private final TalonFX driveTalon;
-    private final CANSparkMax turnSparkMax;
+    private final SparkMax turnSparkMax;
     private final CANcoder cancoder;
 
     private final String moduleLabel;
@@ -70,7 +71,7 @@ public class ModuleIOTBSwerve implements ModuleIO {
             case 0:
                 driveTalon = new TalonFX(Constants.FRONT_LEFT_DRIVE_MOTOR);
                 isDriveMotorInverted = Constants.FRONT_LEFT_DRIVE_MOTOR_INVERTED;
-                turnSparkMax = new CANSparkMax(Constants.FRONT_LEFT_STEER_MOTOR, MotorType.kBrushless);
+                turnSparkMax = new SparkMax(Constants.FRONT_LEFT_STEER_MOTOR, MotorType.kBrushless);
                 cancoder = new CANcoder(Constants.FRONT_LEFT_STEER_ENCODER);
                 absoluteEncoderOffset = new Rotation2d(Constants.FRONT_LEFT_STEER_OFFSET);
                 moduleLabel = "Module0";
@@ -78,7 +79,7 @@ public class ModuleIOTBSwerve implements ModuleIO {
             case 1:
                 driveTalon = new TalonFX(Constants.FRONT_RIGHT_DRIVE_MOTOR);
                 isDriveMotorInverted = Constants.FRONT_RIGHT_DRIVE_MOTOR_INVERTED;
-                turnSparkMax = new CANSparkMax(Constants.FRONT_RIGHT_STEER_MOTOR, MotorType.kBrushless);
+                turnSparkMax = new SparkMax(Constants.FRONT_RIGHT_STEER_MOTOR, MotorType.kBrushless);
                 cancoder = new CANcoder(Constants.FRONT_RIGHT_STEER_ENCODER);
                 absoluteEncoderOffset = new Rotation2d(Constants.FRONT_RIGHT_STEER_OFFSET);
                 moduleLabel = "Module1";
@@ -86,7 +87,7 @@ public class ModuleIOTBSwerve implements ModuleIO {
             case 2:
                 driveTalon = new TalonFX(Constants.BACK_LEFT_DRIVE_MOTOR);
                 isDriveMotorInverted = Constants.BACK_LEFT_DRIVE_MOTOR_INVERTED;
-                turnSparkMax = new CANSparkMax(Constants.BACK_LEFT_STEER_MOTOR, MotorType.kBrushless);
+                turnSparkMax = new SparkMax(Constants.BACK_LEFT_STEER_MOTOR, MotorType.kBrushless);
                 cancoder = new CANcoder(Constants.BACK_LEFT_STEER_ENCODER);
                 absoluteEncoderOffset = new Rotation2d(Constants.BACK_LEFT_STEER_OFFSET);
                 moduleLabel = "Module2";
@@ -94,7 +95,7 @@ public class ModuleIOTBSwerve implements ModuleIO {
             case 3:
                 driveTalon = new TalonFX(Constants.BACK_RIGHT_DRIVE_MOTOR);
                 isDriveMotorInverted = Constants.BACK_RIGHT_DRIVE_MOTOR_INVERTED;
-                turnSparkMax = new CANSparkMax(Constants.BACK_RIGHT_STEER_MOTOR, MotorType.kBrushless);
+                turnSparkMax = new SparkMax(Constants.BACK_RIGHT_STEER_MOTOR, MotorType.kBrushless);
                 cancoder = new CANcoder(Constants.BACK_RIGHT_STEER_ENCODER);
                 absoluteEncoderOffset = new Rotation2d(Constants.BACK_RIGHT_STEER_OFFSET);
                 moduleLabel = "Module3";
@@ -120,15 +121,17 @@ public class ModuleIOTBSwerve implements ModuleIO {
         setDriveBrakeMode(true, isDriveMotorInverted);
 
         // Set config for turn motor
-        turnSparkMax.restoreFactoryDefaults();
         turnSparkMax.setCANTimeout(250);
         turnRelativeEncoder = turnSparkMax.getEncoder();
-        turnSparkMax.setInverted(isTurnMotorInverted);
-        turnSparkMax.setSmartCurrentLimit(Constants.TURN_CURRENT_LIMIT);
-        turnSparkMax.enableVoltageCompensation(12.0);
-        turnSparkMax.setIdleMode(IdleMode.kBrake);
 
-        turnSparkMax.setSmartCurrentLimit(Constants.TURN_CURRENT_LIMIT);
+        SparkMaxConfig turnConfig = new SparkMaxConfig();
+        turnConfig.idleMode(IdleMode.kBrake);
+        turnConfig.smartCurrentLimit(Constants.TURN_CURRENT_LIMIT);
+        turnConfig.inverted(isTurnMotorInverted);
+        turnConfig.voltageCompensation(12.0);
+
+        turnSparkMax.configure(turnConfig, SparkBase.ResetMode.kResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
+
 
         // Return initial status signals for Phoenix6 devices
         drivePosition = driveTalon.getPosition();
@@ -139,11 +142,11 @@ public class ModuleIOTBSwerve implements ModuleIO {
 
         // Initialize relative encoder in turn motors
         turnRelativeEncoder.setPosition(0.0);
-        turnRelativeEncoder.setMeasurementPeriod(10);
-        turnRelativeEncoder.setAverageDepth(2);
-
+        // turnRelativeEncoder.setMeasurementPeriod(10);
+        // turnRelativeEncoder.setAverageDepth(2);
         turnSparkMax.setCANTimeout(0);
-        turnSparkMax.burnFlash();
+
+
 
         // Set update frequencies for TalonFX status signals, position at 2x frequency
         // of other data
@@ -170,6 +173,7 @@ public class ModuleIOTBSwerve implements ModuleIO {
         // Report status code to Alerts
 
         driveMotorDisconnectAlert.set(!drivePosition.getStatus().isOK());
+        turnMotorDisconnectAlert.set(turnSparkMax.hasActiveFault());
 
         // Drive motor inputs
         inputs.drivePositionRad = Units.rotationsToRadians(drivePosition.getValueAsDouble()) / DRIVE_GEAR_RATIO;
@@ -211,7 +215,11 @@ public class ModuleIOTBSwerve implements ModuleIO {
     }
 
     public void setTurnBrakeMode(boolean enable) {
-        turnSparkMax.setIdleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
+
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(enable ? IdleMode.kBrake : IdleMode.kCoast);
+        
+        turnSparkMax.configure(config, SparkBase.ResetMode.kNoResetSafeParameters, SparkBase.PersistMode.kPersistParameters);
     }
 
     public TalonFX getDriveTalon() {
