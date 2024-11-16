@@ -195,7 +195,7 @@ public class RobotContainer {
     }
 
     //Visualize command scheduler routine in SmartDashboard
-    SmartDashboard.putData("Commands", CommandScheduler.getInstance());
+    // SmartDashboard.putData("Commands", CommandScheduler.getInstance());
 
     //Register NamedCommands for use in PathPlanner
     NamedCommands.registerCommand("Intake", new IntakeCommand(intake, indexer, arm));
@@ -251,9 +251,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -driverController.getLeftY() / driveRatio,
-            () -> -driverController.getLeftX() / driveRatio,
-            () -> -driverController.getRightX() / driveRatio));
+            () -> -outreachController.getLeftY() / driveRatio,
+            () -> -outreachController.getLeftX() / driveRatio,
+            () -> -outreachController.getRightX() / driveRatio));
 
     // Default commands
     shooter.setDefaultCommand(new InstantCommand(() -> shooter.idleFlywheels(shootEnum), shooter));
@@ -369,10 +369,6 @@ public class RobotContainer {
       .onTrue(new InstantCommand(() -> shootEnum = shootPositions.AMP)
       .andThen(new InstantCommand(() -> arm.setArmSetpoint(shootEnum.shootAngle))));
 
-    SmartDashboard.putData(arm);
-    SmartDashboard.putData(indexer);
-    SmartDashboard.putData(drive);
-    SmartDashboard.putData(climber);
   }
 
   /**

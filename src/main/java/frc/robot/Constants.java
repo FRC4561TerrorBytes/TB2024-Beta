@@ -81,16 +81,32 @@ public final class Constants {
                         new Translation2d(-DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -DRIVETRAIN_WHEELBASE_METERS / 2.0)
         };
 
+                // IMPORTANT: How to adjust Absolute Drive Encoder Offsets,
+        // Step 0: To be more exact, set all offsets to 0,
+        // Step 1: Point all modules forward, with the bevel gear facing out, while either disabled or turned off,
+                // Note: Make sure the modules are aligned with each other using a straight object, like a 2 by 4, or hex shaft,
+        // Step 2: Open adventage scope, inside, open advantagekit and drive sections,
+        // Step 3: Select the module you want to adjust, and pull the Turn Absolute Position into the line graph,
+        // Step 4: Pause the line graph and select a point to making viewing easier, then copy the Turn Absolute Position,
+        // Step 5: Add the copied position to the Steer Offset of the module (IN CODE), if there is already a value add the 2 together,
+                //Note: Repeat step 5 until the Turn Absolute Position is below 0.01,
+                // Note: Make sure if the Turn Absolute Position is negative that the number added is also negative,
+        // Step 6: Test by driving forward, 2 of the complete modules should be running in the same direction while aligned,
+                // Note: If the modules are alined but one drives in the opposite direction,
+                        // flip the module going the wrong direction around, then repeat steps 1-6 for that module, bevel gear out,
+                        // If the modules are not aligned the offsets are wrong, repeat step 5.
+
+
         // MODULE 0
         public static final int FRONT_LEFT_DRIVE_MOTOR = 1; // 5 for fulcrum
         public static final int FRONT_LEFT_STEER_MOTOR = 2; // 6 for fulcrum
         public static final int FRONT_LEFT_STEER_ENCODER = 21; // 23 for fulcrum
-        public static final InvertedValue FRONT_LEFT_DRIVE_MOTOR_INVERTED = InvertedValue.CounterClockwise_Positive; // counter
+        public static final InvertedValue FRONT_LEFT_DRIVE_MOTOR_INVERTED = InvertedValue.Clockwise_Positive; // counter
                                                                                                                      // clockwise
                                                                                                                      // for
                                                                                                                      // fulcrum
         public static final boolean FRONT_LEFT_TURN_MOTOR_INVERTED = true;
-        public static final double FRONT_LEFT_STEER_OFFSET = 1.77465;// 0.2393010029 Fulcrum
+        public static final double FRONT_LEFT_STEER_OFFSET = -1.423534171157875;// 0.2393010029 Fulcrum
                                                                      // drivebase
 
         // MODULE 1
@@ -99,7 +115,7 @@ public final class Constants {
         public static final int FRONT_RIGHT_STEER_ENCODER = 24; // 22 for fulcrum
         public static final InvertedValue FRONT_RIGHT_DRIVE_MOTOR_INVERTED = InvertedValue.CounterClockwise_Positive;
         public static final boolean FRONT_RIGHT_TURN_MOTOR_INVERTED = true;
-        public static final double FRONT_RIGHT_STEER_OFFSET = -1.82381;// 1.73646625; Fulcrum drivebase
+        public static final double FRONT_RIGHT_STEER_OFFSET = 1.8039614065535141 + 2.6660586093452445;// 1.73646625; Fulcrum drivebase
         // MODULE 2
         public static final int BACK_LEFT_DRIVE_MOTOR = 3; // 7 for fulcrum
         public static final int BACK_LEFT_STEER_MOTOR = 4; // 8 for fulcrum
@@ -109,17 +125,17 @@ public final class Constants {
                                                                                                              // for
                                                                                                              // fulcrum
         public static final boolean BACK_LEFT_TURN_MOTOR_INVERTED = true;
-        public static final double BACK_LEFT_STEER_OFFSET = 0.690461;// -2.5632818; Fulcrum drivebase
+        public static final double BACK_LEFT_STEER_OFFSET = 0.6672816427302539;// -2.5632818; Fulcrum drivebase
 
         // MODULE 3
         public static final int BACK_RIGHT_DRIVE_MOTOR = 5; // 1 for fulcrum
         public static final int BACK_RIGHT_STEER_MOTOR = 6; // 2 for fulcrum
         public static final int BACK_RIGHT_STEER_ENCODER = 23; // 21 for fulcrum
-        public static final InvertedValue BACK_RIGHT_DRIVE_MOTOR_INVERTED = InvertedValue.Clockwise_Positive; // clockwise
+        public static final InvertedValue BACK_RIGHT_DRIVE_MOTOR_INVERTED = InvertedValue.CounterClockwise_Positive; // clockwise
                                                                                                               // for //
                                                                                                               // fulcrum
         public static final boolean BACK_RIGHT_TURN_MOTOR_INVERTED = true;
-        public static final double BACK_RIGHT_STEER_OFFSET = 2.4541988;// -2.1184274; Fulcrum drivebase
+        public static final double BACK_RIGHT_STEER_OFFSET = 0.6181942575179133 + -1.201106956914457;// -2.1184274; Fulcrum drivebase
 
         public static final double ARM_CURRENT_LIMIT = 40.0;
 
@@ -257,7 +273,7 @@ public final class Constants {
 
         public static final boolean tuningMode = true;
 
-        public static final Mode currentMode = Mode.SIM;
+        public static final Mode currentMode = Mode.REAL;
 
         public static enum Mode {
                 /** Running on a real robot. */
