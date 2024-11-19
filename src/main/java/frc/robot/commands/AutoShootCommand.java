@@ -8,32 +8,29 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants;
-import frc.robot.RobotContainer.shootPositions;
 import frc.robot.subsystems.Leds;
-import frc.robot.subsystems.arm.Arm;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.indexer.Indexer;
-import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class AutoShootCommand extends Command {
 
-  private final Arm arm;
+ 
   private final Shooter shooter;
   private final Indexer indexer;
-  private final Intake intake;
+  
   private final Drive drive;
   private double targetMPS;
 
 
-  public AutoShootCommand(Arm arm, Shooter shooter, Indexer indexer, Intake intake, Drive drive) {
-    this.arm = arm;
+  public AutoShootCommand( Shooter shooter, Indexer indexer,  Drive drive) {
+   
     this.shooter = shooter;
     this.indexer = indexer;
-    this.intake = intake;
+    
     this.drive = drive;
 
-    addRequirements(shooter, indexer, intake, drive);
+    addRequirements(shooter, indexer, drive);
   }
 
   // Called when the command is initially scheduled.
@@ -45,15 +42,15 @@ public class AutoShootCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double armAngleInterpolated = shooter.interpolateArmAngle(drive.getDistanceFromSpeaker());
-    arm.setArmSetpoint(armAngleInterpolated);
+
+   
     targetMPS = 25;
 
     shooter.setFlywheelSpeed(targetMPS);
 
-    if (shooter.flywheelUpToSpeed(targetMPS) && arm.armAtSetpoint()) {
+    if (shooter.flywheelUpToSpeed(targetMPS)) {
       indexer.setIndexerSpeed(Constants.INDEXER_FEED_SPEED);
-      intake.setIntakeSpeed(0.5);
+    
     }
   }
 
@@ -62,10 +59,8 @@ public class AutoShootCommand extends Command {
   public void end(boolean interrupted) {
     shooter.stopFlywheel();
     indexer.stopIndexer();
-    intake.stopIntake();
-    if(!interrupted){
-      arm.setArmSetpoint(shootPositions.STOW.getShootAngle());
-    }
+    
+    
     Leds.getInstance().autoShootCommand = false;
     Logger.recordOutput("Auto Rotate/Rotating", false);
   }
