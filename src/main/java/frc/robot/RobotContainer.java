@@ -213,9 +213,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -outreachController.getLeftY() / driveRatio,
-            () -> -outreachController.getLeftX() / driveRatio,
-            () -> -outreachController.getRightX() / driveRatio));
+            () -> -driverController.getLeftY() / driveRatio,
+            () -> -driverController.getLeftX() / driveRatio,
+            () -> -driverController.getRightX() / driveRatio));
 
     // Default commands
     shooter.setDefaultCommand(new InstantCommand(() -> shooter.idleFlywheels(shootEnum), shooter));
@@ -233,12 +233,14 @@ public class RobotContainer {
     // Run shoot command (from anywhere)
     driverController.rightBumper()
       .whileTrue(
-        new FaceSpeaker(drive)
-        .andThen(new AutoShootCommand( shooter, indexer,  drive))
+        (new AutoShootCommand( shooter, indexer,  drive))
         .alongWith(new InstantCommand(() -> Leds.getInstance().autoShoot = true)));
       
     driverController.rightBumper().onFalse(new InstantCommand(() -> Leds.getInstance().autoShoot = false));
 
+    driverController.leftBumper().whileTrue(new RunCommand(() -> indexer.setIndexerSpeed(-0.2), indexer)
+      .alongWith(new RunCommand(() -> shooter.setFlywheelSpeed(-2),  shooter)));
+      
     // Reset gyro
     driverController.rightStick()
       .and(driverController.leftStick())
